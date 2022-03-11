@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     public GameObject pickUpPrefab;
     public GameObject pickUpPrefabParent;
     public GameObject playGround;
+    public GameObject levelLabelText;
+    public TMP_Dropdown difficultyDropdown;
 
 
     private RollaBall.Types.Level level;
@@ -23,7 +25,7 @@ public class PlayerController : MonoBehaviour
     private const string pickupTagName = "PickUp";
     private Vector3 playfieldSize;
 
-    private Rigidbody rb;
+    private Rigidbody rb; //Game Ball = Player Ball
     private int count;
     private float movementX;
     private float movementY;
@@ -42,7 +44,38 @@ public class PlayerController : MonoBehaviour
         //substract the walls from the outer limit and give a few more ticks to prevent object from being partialy embedded in the wall
         playfieldSize.x -= 2.5f;
         playfieldSize.z -= 2.5f;
+        PopulateDifficultyDropdown();
         ResetAllComponents();
+        ShowChooseDifficulty();
+    }
+    private void PopulateDifficultyDropdown()
+    {
+        RollaBall.Types.Levels levels = new RollaBall.Types.Levels();
+        difficultyDropdown.ClearOptions();
+        difficultyDropdown.options.Clear();
+        difficultyDropdown.AddOptions(levels.levels);
+    }
+
+    private void ShowChooseDifficulty()
+    {
+        difficultyDropdown.GetComponent<GameObject>().SetActive(true);
+        levelLabelText.SetActive(true);
+        difficultyDropdown.Show();
+        restartButtonObject.SetActive(true);
+    }
+    private void HideChooseDifficulty()
+    {
+        levelLabelText.SetActive(false);
+        difficultyDropdown.Hide();
+        restartButtonObject.SetActive(false);
+        if (difficultyDropdown != null)
+        {
+            difficultyDropdown.GetComponent<GameObject>().SetActive(false);
+        }
+    }
+    public void difficultyDropDown_onValueChanged()
+    {
+        level.ChangeDifficulty(Convert.ToInt32(difficultyDropdown.captionText));
     }
 
     void OnMove(InputValue movementValue)
@@ -60,6 +93,7 @@ public class PlayerController : MonoBehaviour
         {
             winTextObject.SetActive(true);
             restartButtonObject.SetActive(true);
+            ShowChooseDifficulty();
             StopMovement(rb);
         }
     }
@@ -100,11 +134,14 @@ public class PlayerController : MonoBehaviour
             //    go.SetActive(true);
 
         count = 0;
-        
+
+        HideChooseDifficulty();
+
         SetCountText();
-        SetDifficultyText();
+        SetDifficultyText();        
         winTextObject.SetActive(false);
         restartButtonObject.SetActive(false);
+        levelLabelText.SetActive(false);        
         stop = false;
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,6 +9,20 @@ namespace RollaBall
 {
     internal class Types
     {
+        public class Levels
+        {
+            private const int maxLevels = 3;
+            public List<string> levels = new List<string>();
+
+            public Levels()
+            {
+                foreach (int level in Enumerable.Range(0, maxLevels + 1).ToList())
+                {
+                    levels.Add(level.ToString());
+                }
+            }
+        }
+
         public class Level
         {
             public int difficulty;
