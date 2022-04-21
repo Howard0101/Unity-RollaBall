@@ -6,6 +6,8 @@ using TMPro;
 using RollaBall;
 using System;
 
+//TODO: ESC ends game!
+
 public class PlayerController : MonoBehaviour
 {
     public float speed = 0;
@@ -44,10 +46,20 @@ public class PlayerController : MonoBehaviour
         //substract the walls from the outer limit and give a few more ticks to prevent object from being partialy embedded in the wall
         playfieldSize.x -= 2.5f;
         playfieldSize.z -= 2.5f;
+        //ResetAllComponents(); //Starts the Game at once...
         PopulateDifficultyDropdown();
-        ResetAllComponents();
+        StartMenuScreen(false);
+    }
+
+    private void StartMenuScreen(bool winner)
+    {
+        winTextObject.SetActive(winner);
+        StopMovement(rb);
+        SetCountText();
+        SetDifficultyText();
         ShowChooseDifficulty();
     }
+
     private void PopulateDifficultyDropdown()
     {
         RollaBall.Types.Levels levels = new RollaBall.Types.Levels();
@@ -58,7 +70,7 @@ public class PlayerController : MonoBehaviour
 
     private void ShowChooseDifficulty()
     {
-        difficultyDropdown.GetComponent<GameObject>().SetActive(true);
+        difficultyDropdown.GetComponent<TMP_Dropdown>().gameObject.SetActive(true);
         levelLabelText.SetActive(true);
         difficultyDropdown.Show();
         restartButtonObject.SetActive(true);
@@ -70,12 +82,15 @@ public class PlayerController : MonoBehaviour
         restartButtonObject.SetActive(false);
         if (difficultyDropdown != null)
         {
-            difficultyDropdown.GetComponent<GameObject>().SetActive(false);
+            difficultyDropdown.GetComponent<TMP_Dropdown>().gameObject.SetActive(false);
         }
     }
-    public void difficultyDropDown_onValueChanged()
+
+    public void difficultyDropDown_onValueChanged(int index)
     {
         level.ChangeDifficulty(Convert.ToInt32(difficultyDropdown.captionText));
+        SetDifficultyText();
+        SetCountText();
     }
 
     void OnMove(InputValue movementValue)
@@ -91,10 +106,11 @@ public class PlayerController : MonoBehaviour
         countText.text = "Count: " + count.ToString() + "/" + maxCount;
         if(count >= maxCount)
         {
-            winTextObject.SetActive(true);
-            restartButtonObject.SetActive(true);
-            ShowChooseDifficulty();
-            StopMovement(rb);
+            StartMenuScreen(true);
+            //winTextObject.SetActive(true);
+            //restartButtonObject.SetActive(true);
+            //ShowChooseDifficulty();
+            //StopMovement(rb);
         }
     }
     private void SetDifficultyText()
@@ -178,7 +194,8 @@ public class PlayerController : MonoBehaviour
 
             count++;
 
-            SetCountText();
+            SetCountText();            
         }
     }
+
 }
